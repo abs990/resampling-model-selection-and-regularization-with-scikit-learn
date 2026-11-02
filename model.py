@@ -27,8 +27,42 @@ from sklearn.model_selection import train_test_split
 def train_test(X, y, test_size=0.25, random_state=0):
     return train_test_split(X, y, test_size=test_size, random_state=random_state)
 
-# Step 3 - validation_set_curve (not yet solved)
-# TODO: implement
+# Step 3 - validation_set_curve
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import PolynomialFeatures
+
+def poly_model(degree):
+    return make_pipeline(PolynomialFeatures(degree), LinearRegression())
+
+def validation_set_curve(X, y, feature, degrees, random_state):
+    X_train, X_val, y_train, y_val = train_test_split(X[[feature]], y, test_size=0.5, random_state=random_state)
+    return {
+        degree: round(
+            mean_squared_error(y_val, poly_model(degree).fit(X_train, y_train).predict(X_val)), 
+            1
+            ) for degree in degrees
+    }
+
+def curve_spread(X, y, feature, degrees, seeds):
+    # per degree, max - min of the validation MSE across seeds, rounded to 1 decimal
+    min_mse = {degree : float('inf') for degree in degrees}
+    max_mse = {degree : -float('inf') for degree in degrees}
+
+    for seed in seeds:
+        curve = validation_set_curve(X, y, feature, degrees, seed)
+        for degree in degrees:
+            if curve[degree] < min_mse[degree]:
+                min_mse[degree] = curve[degree]
+            if curve[degree] > max_mse[degree]:
+                max_mse[degree] = curve[degree]
+
+    return {
+        degree: max_mse[degree] - min_mse[degree] for degree in degrees
+    }
 
 # Step 4 - cv_mse (not yet solved)
 # TODO: implement
