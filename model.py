@@ -86,8 +86,24 @@ def loocv_mse(estimator, X, y):
 
     return np.round(np.mean(np.array(means)), 2)
 
-# Step 5 - cv_spread_by_k (not yet solved)
-# TODO: implement
+# Step 5 - cv_spread_by_k
+import numpy as np
+
+def cv_spread_by_k(estimator, X, y, ks, seeds):
+    # TODO: {k: (mean of cv estimate over seeds, std ddof=1 over seeds)} rounded to 1 decimal
+    result = {}
+    for k in ks:
+        m = []
+        for seed in seeds:
+            m.append(cv_mse(estimator, X, y, k, seed)[0])
+        result[k] = (np.mean(m), np.std(m, ddof=1))
+    return result
+
+def compare_with_loocv(estimator, X, y, ks, seeds):
+    return {
+        'loocv': loocv_mse(estimator, X, y),
+         'kfold': cv_spread_by_k(estimator, X, y, ks, seeds)
+    }
 
 # Step 6 - bootstrap_coefficients (not yet solved)
 # TODO: implement
