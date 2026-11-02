@@ -64,8 +64,27 @@ def curve_spread(X, y, feature, degrees, seeds):
         degree: max_mse[degree] - min_mse[degree] for degree in degrees
     }
 
-# Step 4 - cv_mse (not yet solved)
-# TODO: implement
+# Step 4 - cv_mse
+import numpy as np
+from sklearn.model_selection import KFold, LeaveOneOut, cross_val_score
+
+def cv_mse(estimator, X, y, k=5, random_state=0):
+    # shuffled KFold; cross_val_score with neg MSE; return (mean, se) rounded to 2 decimals
+    
+    scores = -1 * cross_val_score(estimator, X, y, scoring='neg_mean_squared_error', cv=KFold(n_splits=k, shuffle=True, random_state=random_state))
+    return np.mean(scores), np.std(scores, ddof=1) / np.sqrt(k)
+
+def loocv_mse(estimator, X, y):
+    # LeaveOneOut; mean squared error over held-out points, rounded to 2 decimals
+    loo = LeaveOneOut()
+
+    means = []
+
+    for i, (train_index, test_index) in enumerate(loo.split(X)):
+        mean, _ = cv_mse(estimator, X.iloc[train_index], y.iloc[train_index])
+        means.append(mean)
+
+    return np.mean(np.array(means))
 
 # Step 5 - cv_spread_by_k (not yet solved)
 # TODO: implement
