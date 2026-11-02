@@ -84,7 +84,7 @@ def loocv_mse(estimator, X, y):
         mean, _ = cv_mse(estimator, X.iloc[train_index], y.iloc[train_index])
         means.append(mean)
 
-    return np.mean(np.array(means))
+    return np.round(np.mean(np.array(means)), 2)
 
 # Step 5 - cv_spread_by_k (not yet solved)
 # TODO: implement
