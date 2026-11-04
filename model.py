@@ -139,8 +139,31 @@ def ols_standard_errors(X, y):
     se = np.sqrt(sigma2 * np.diag(np.linalg.inv(Xb.T @ Xb)))
     return np.round(se[1:], 2)                   # ← drop intercept entry
 
-# Step 7 - stepwise_path (not yet solved)
-# TODO: implement
+# Step 7 - stepwise_path
+from sklearn.feature_selection import SequentialFeatureSelector
+from sklearn.linear_model import LinearRegression
+
+def select_features(X, y, k, direction, cv):
+    # SequentialFeatureSelector with neg MSE scoring; return the selected column names
+    return SequentialFeatureSelector(
+        LinearRegression(), 
+        n_features_to_select=k, 
+        direction=direction, 
+        cv=cv, 
+        scoring='neg_mean_squared_error').fit(X, y).get_feature_names_out().tolist()
+
+def stepwise_path(X, y, direction, cv):
+    # {k: selected features} for k = 1..p-1, plus k = p -> all columns
+    _, p = X.shape
+
+    result = {}
+
+    for k in range(1, p):
+        result[k] = select_features(X, y, k, direction, cv)
+
+    result[p] = X.columns.tolist()
+
+    return result
 
 # Step 8 - score_path (not yet solved)
 # TODO: implement
