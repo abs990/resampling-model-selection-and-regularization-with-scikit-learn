@@ -1,6 +1,6 @@
 # Resampling, Model Selection and Regularization with Scikit-Learn
 
-Chapters 5 and 6 of An Introduction to Statistical Learning as a practitioner does them. On the diabetes data, see why a single validation split lies and how k-fold and leave-one-out fix it, bootstrap coefficient uncertainty, run stepwise selection, trace ridge and lasso paths with the one-standard-error rule, and build PCR and PLS as pipelines.
+Resampling and model selection from An Introduction to Statistical Learning as a practitioner does them. On the diabetes data, see why a single validation split lies and how k-fold and leave-one-out fix it, bootstrap coefficient uncertainty, run stepwise selection, trace ridge and lasso paths with the one-standard-error rule, and build PCR and PLS as pipelines.
 
 ## How to run
 
@@ -15,7 +15,7 @@ python scaffold.py
 - [x] **3.** validation_set_curve
 - [x] **4.** cv_mse
 - [x] **5.** cv_spread_by_k
-- [ ] **6.** bootstrap_coefficients
+- [x] **6.** bootstrap_coefficients
 - [ ] **7.** stepwise_path
 - [ ] **8.** score_path
 - [ ] **9.** one_se_rule

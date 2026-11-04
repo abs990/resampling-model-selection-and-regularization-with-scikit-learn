@@ -105,8 +105,39 @@ def compare_with_loocv(estimator, X, y, ks, seeds):
          'kfold': cv_spread_by_k(estimator, X, y, ks, seeds)
     }
 
-# Step 6 - bootstrap_coefficients (not yet solved)
-# TODO: implement
+# Step 6 - bootstrap_coefficients
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+def bootstrap_coefficients(X, y, n_boot=200, random_state=0):
+    # rng.integers(0, n, n) per replicate;
+    rng = np.random.default_rng(seed=random_state)
+    w = []
+    
+    for i in range(n_boot):
+        idx = rng.integers(0, X.shape[0], X.shape[0])
+        # fit LinearRegression on the resample;
+        # (n_boot, p) coefs
+        w.append(LinearRegression().fit(X.iloc[idx], y.iloc[idx]).coef_)
+
+    return np.array(w)
+
+def bootstrap_se(coefs):
+    # std over replicates (ddof=1), rounded to 2 decimals
+    return np.round(np.std(coefs, axis=0, ddof=1), 2)
+
+def ols_standard_errors(X, y):
+    X, y = np.asarray(X), np.asarray(y)
+    n = X.shape[0]                               # ← real sample size, NOT w.shape[0]
+    Xb = np.column_stack([np.ones(n), X])        # ← prepend ones (the intercept)
+    p = Xb.shape[1]                              # p = #features + intercept
+
+    w = np.linalg.lstsq(Xb, y, rcond=None)[0]    # single OLS fit
+    resid = y - Xb @ w
+    sigma2 = np.sum(resid ** 2) / (n - p)        # ← RSS / dof, not bootstrap_se / dof
+
+    se = np.sqrt(sigma2 * np.diag(np.linalg.inv(Xb.T @ Xb)))
+    return np.round(se[1:], 2)                   # ← drop intercept entry
 
 # Step 7 - stepwise_path (not yet solved)
 # TODO: implement
